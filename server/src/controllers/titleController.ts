@@ -80,17 +80,47 @@ export default class TitleController {
         console.log("id", id);
 
         try {
-            const selectedTitle = await db('titles').where('id','=',id).select('*');
+            const [selectedTitle] = await db('titles').where('id','=',id).select('*');
+            
+            console.log("selectedTitle",selectedTitle);
+            
+            
             if(!selectedTitle) return response.status(400).json({message: "Title not fouded"});
 
             const parcels = await db('parcels').where('title_id','=',id).select('*');
 
             const delayed_days  = (parcels && parcels.length!=0) ?  daysBetween(parcels[0].due_date) : 0;
             
+            let total = 0;
+
+            if(parcels && parcels.length!=0) {
+                var originalValue = parcels.reduce((total:number, parcel:any) => 
+                    total+ parcel.value
+                ,0);
+
+                var penalty = originalValue * (selectedTitle.penalty/100);
+
+                var interest = parcels.reduce((total:number, parcel:any) => {
+                    let currentValue = ((selectedTitle.interest/100)/30) * parcel.value * daysBetween(parcel.due_date);
+                    console.log("currentValue",currentValue);
+                    return total + currentValue;
+                }
+                ,0);
+
+                console.log("originalValue",originalValue);
+                console.log("penalty",penalty);
+                console.log("interest",interest);
+
+                total = originalValue + penalty + interest;
+                
+
+
+            }
 
             const title = {
-                ...selectedTitle[0],
+                ...selectedTitle,
                 delayed_days,
+                total, 
                 parcels
             }
             console.log("title",title);
