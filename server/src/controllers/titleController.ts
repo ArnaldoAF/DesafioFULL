@@ -1,6 +1,20 @@
 import {Request, Response} from 'express';
 import db from '../database/connections';
 
+function daysBetween(data: string) {
+    var dateParts = data.split("/");
+    var date1 = new Date(
+        +dateParts[2], 
+        +dateParts[1] - 1, 
+        +dateParts[0]).getTime(); 
+
+    var date2 = new Date().getTime();
+
+    var days = Math.floor(Math.abs(date2 - date1)/(1000*60*60*24));
+
+    return days;
+
+}
 
 export default class TitleController {
     async create(request: Request, response: Response) {
@@ -70,12 +84,16 @@ export default class TitleController {
             if(!selectedTitle) return response.status(400).json({message: "Title not fouded"});
 
             const parcels = await db('parcels').where('title_id','=',id).select('*');
-            console.log("parcels",parcels);
+
+            const delayed_days  = (parcels && parcels.length!=0) ?  daysBetween(parcels[0].due_date) : 0;
+            
 
             const title = {
                 ...selectedTitle[0],
+                delayed_days,
                 parcels
             }
+            console.log("title",title);
 
             return response.status(200).json(title);
         } catch(err) {
