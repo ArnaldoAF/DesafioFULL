@@ -14,6 +14,7 @@ routes.get('/test', (request, response) => {
 
 routes.post('/title', titleController.create);
 routes.get('/title/:id', titleController.title);
+routes.get('/titles', titleController.index);
 
 
 export default routes;

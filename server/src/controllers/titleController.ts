@@ -12,14 +12,55 @@ function daysBetween(data: string) {
 
     var days = Math.floor(Math.abs(date2 - date1)/(1000*60*60*24));
 
-    return days;
+    return date2 - date1 > 0 ? days : 0;
 
+}
+
+async function formatTitle(title: any) {
+    console.log("-------------------------------------");
+    console.log("formatTitle");
+    const parcels = await db('parcels').where('title_id','=',title.id).select('*');
+
+    const delayed_days  = (parcels && parcels.length!=0) ?  daysBetween(parcels[0].due_date) : 0;
+    
+    let total = 0;
+
+    if(parcels && parcels.length!=0) {
+        const originalValue = parcels.reduce((total:number, parcel:any) => 
+            total+ parcel.value
+        ,0);
+
+        const penalty = originalValue * (title.penalty/100);
+
+        const interest = parcels.reduce((total:number, parcel:any) => {
+            let currentValue = ((title.interest/100)/30) * parcel.value * daysBetween(parcel.due_date);
+            console.log("currentValue",currentValue);
+            return total + currentValue;
+        }
+        ,0);
+
+        console.log("originalValue",originalValue);
+        console.log("penalty",penalty);
+        console.log("interest",interest);
+
+        total = (delayed_days == 0 ) ? originalValue : originalValue + penalty + interest;
+    }
+
+    const titleFinal = {
+        ...title,
+        delayed_days,
+        total, 
+        parcels
+    }
+    console.log("title",titleFinal);
+
+    return titleFinal;
 }
 
 export default class TitleController {
     async create(request: Request, response: Response) {
         console.log("---------------------------------------------------");
-        console.log("TitleController - Create")
+        console.log("TitleController - Create");
         const { number, name, cpf, interest, penalty, parcels } = request.body;
         console.log(request.body);
 
@@ -87,42 +128,9 @@ export default class TitleController {
             
             if(!selectedTitle) return response.status(400).json({message: "Title not fouded"});
 
-            const parcels = await db('parcels').where('title_id','=',id).select('*');
-
-            const delayed_days  = (parcels && parcels.length!=0) ?  daysBetween(parcels[0].due_date) : 0;
             
-            let total = 0;
 
-            if(parcels && parcels.length!=0) {
-                var originalValue = parcels.reduce((total:number, parcel:any) => 
-                    total+ parcel.value
-                ,0);
-
-                var penalty = originalValue * (selectedTitle.penalty/100);
-
-                var interest = parcels.reduce((total:number, parcel:any) => {
-                    let currentValue = ((selectedTitle.interest/100)/30) * parcel.value * daysBetween(parcel.due_date);
-                    console.log("currentValue",currentValue);
-                    return total + currentValue;
-                }
-                ,0);
-
-                console.log("originalValue",originalValue);
-                console.log("penalty",penalty);
-                console.log("interest",interest);
-
-                total = originalValue + penalty + interest;
-                
-
-
-            }
-
-            const title = {
-                ...selectedTitle,
-                delayed_days,
-                total, 
-                parcels
-            }
+            const title = await formatTitle(selectedTitle);
             console.log("title",title);
 
             return response.status(200).json(title);
@@ -139,10 +147,26 @@ export default class TitleController {
     async index(request: Request, response: Response) {
         console.log("---------------------------------------------------");
         console.log("TitleController - Index");
+        try {
+            const titleList = await db('titles').select('*');
 
-        const titleList = await db('connections').select('*');
+            const titleFormatedList = [];
+            
+            for(let i=0;i<titleList.length;i++){
+                const title = await formatTitle(titleList[i]);
+                console.log("title",title);
+                titleFormatedList.push(title);
+            }
+            console.log("titleFormatedList",titleFormatedList);
 
-        return response.status(201).json(titleList);
+            return response.status(201).json(titleFormatedList);
+        } catch(err) {
+            console.log(err);
+            return response.status(400).json({
+                "message": "Erro ao buscar Título",
+                "body": err
+            })
+        }
         
     }
 }
