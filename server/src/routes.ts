@@ -13,7 +13,7 @@ routes.get('/test', (request, response) => {
 });
 
 routes.post('/title', titleController.create);
-routes.get('/title', titleController.index);
+routes.get('/title/:id', titleController.title);
 
 
 export default routes;

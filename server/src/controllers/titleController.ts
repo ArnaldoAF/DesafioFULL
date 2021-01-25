@@ -61,11 +61,23 @@ export default class TitleController {
         console.log("---------------------------------------------------");
         console.log("TitleController - Title");
 
-        var titleId = request.params;
+        var {id} = request.params;
         
-        console.log("titleId", titleId);
+        console.log("id", id);
+
         try {
-            
+            const selectedTitle = await db('titles').where('id','=',id).select('*');
+            if(!selectedTitle) return response.status(400).json({message: "Title not fouded"});
+
+            const parcels = await db('parcels').where('title_id','=',id).select('*');
+            console.log("parcels",parcels);
+
+            const title = {
+                ...selectedTitle[0],
+                parcels
+            }
+
+            return response.status(200).json(title);
         } catch(err) {
             console.log(err);
             return response.status(400).json({
