@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import {Link} from 'react-router-dom';
 
 import './styles.css';
-import UserHeader from '../../components/UserHeader';
 
 
 import api from '../../services/api';
 import Button from '../../components/Button';
 
-const TeacherList: React.FC = () => {
+const List: React.FC = () => {
     const [titles, setTitles] = useState([]);
 
     useEffect(() => {
@@ -23,11 +23,15 @@ const TeacherList: React.FC = () => {
 
     return (
         <>
-        <UserHeader />
         <div id="page-teacher-list" className="container">
 
             <main>
-            <Button>ADICIONAR TITULO EM ATRASO</Button>
+            <Link to="/title" >
+                <Button>
+                
+                    ADICIONAR TITULO EM ATRASO
+                </Button>
+            </Link>
             <table >
                         <tr>
                             <th>Título</th>
@@ -47,7 +51,11 @@ const TeacherList: React.FC = () => {
                                     <td>{title.original_value}</td>
                                     <td>{title.delayed_days}</td>
                                     <td>{title.total}</td>
-                                    <td><Button>👁️</Button></td>
+                                    <td>
+                                        <Link to={"/title/"+title.id} >
+                                            <Button>👁️</Button>
+                                        </Link>
+                                    </td>
 
                                 </tr>
                                 
@@ -63,4 +71,4 @@ const TeacherList: React.FC = () => {
     )
 }
 
-export default TeacherList;
+export default List;
