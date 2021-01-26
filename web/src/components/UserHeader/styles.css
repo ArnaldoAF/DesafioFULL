@@ -1,0 +1,8 @@
+.user-header {
+    display: flex;
+    background-color: var(--color-primary);
+    color: white;
+    height: 10vh;
+    justify-content: center;
+    align-items: center;
+}

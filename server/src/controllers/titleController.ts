@@ -24,13 +24,14 @@ async function formatTitle(title: any) {
     const delayed_days  = (parcels && parcels.length!=0) ?  daysBetween(parcels[0].due_date) : 0;
     
     let total = 0;
+    let original_value = 0;
 
     if(parcels && parcels.length!=0) {
-        const originalValue = parcels.reduce((total:number, parcel:any) => 
+        original_value = parcels.reduce((total:number, parcel:any) => 
             total+ parcel.value
         ,0);
 
-        const penalty = originalValue * (title.penalty/100);
+        const penalty = original_value * (title.penalty/100);
 
         const interest = parcels.reduce((total:number, parcel:any) => {
             let currentValue = ((title.interest/100)/30) * parcel.value * daysBetween(parcel.due_date);
@@ -39,16 +40,17 @@ async function formatTitle(title: any) {
         }
         ,0);
 
-        console.log("originalValue",originalValue);
+        console.log("original_value",original_value);
         console.log("penalty",penalty);
         console.log("interest",interest);
 
-        total = (delayed_days == 0 ) ? originalValue : originalValue + penalty + interest;
+        total = (delayed_days == 0 ) ? original_value : original_value + penalty + interest;
     }
 
     const titleFinal = {
         ...title,
         delayed_days,
+        original_value,
         total, 
         parcels
     }

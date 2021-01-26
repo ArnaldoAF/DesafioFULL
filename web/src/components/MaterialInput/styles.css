@@ -1,0 +1,76 @@
+/* Estrutura */
+
+.input-box {
+    background-color: var(--color-box-footer);
+    border-radius: 0px;
+    border: 1px solid #E6E6F0;
+    box-sizing: border-box;
+    padding-top: 0.4rem;
+}
+
+.input-container {
+    background-color: var(--color-box-footer);
+    position: relative;
+    margin: 1.5rem 0;
+    display: flex;
+}
+
+.input-box:first-child {
+    border-radius: 8px 8px 0px 0px
+}
+
+.input-box:last-child {
+    border-radius: 0px 0px 8px 8px;
+}
+
+.input {
+    background-color: var(--color-box-footer);
+    border: 0;
+    outline: none;
+    transition: .2s ease-in-out;
+    box-sizing: border-box;
+}
+
+.label {
+    top: 0;
+    left: 0;
+    right: 0;
+    color: var(--color-text-complement);
+    display: flex;
+    align-items: center;
+    position: absolute;
+    font-size: 1rem;
+    cursor: text;
+    font-size: 1.4rem;
+    transition: .2s ease-in-out;
+    box-sizing: border-box;
+}
+
+.input,
+.label {
+    width: 100%;
+    height: 3rem;
+    font-size: 1.4rem;
+    padding-left: 1.5rem;
+}
+
+
+/* Interation */
+
+.input:focus,
+.input-box:focus {
+    border-left: 2px solid var(--color-primary-light);
+}
+
+.input:focus+.label,
+.input:not(:placeholder-shown)+label {
+    color: #26a69a;
+    font-size: 1.1rem;
+    top: -2.5rem;
+    pointer-events: none;
+}
+
+.eye {
+    margin-right: 1.5rem;
+    margin-left: 1rem;
+}

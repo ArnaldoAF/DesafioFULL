@@ -1,0 +1,33 @@
+#page-teacher-list {
+    width: 100vw;
+    height: 90vh;
+    overflow: auto;
+    max-width: 100%;
+}
+
+table {
+    width: 100%;
+    margin-top: 2rem;
+}
+
+th,
+td {
+    border: 1px solid black;
+    text-align: center;
+    border-radius: 8px;
+}
+
+th,
+td {
+    padding: 3px;
+}
+
+th {
+    border: 3px solid black;
+}
+
+#page-teacher-list main {
+    margin: 1.2rem auto;
+    width: 100%;
+    max-width: 940px;
+}

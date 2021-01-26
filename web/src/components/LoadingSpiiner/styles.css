@@ -1,0 +1,11 @@
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    max-width: 100%;
+    max-height: 100%;
+    animation: spin 5s linear infinite;
+}
